@@ -40,3 +40,22 @@ blocks:
                 if [ -n "${!var}" ]; then echo "$var: set"; else echo "$var: MISSING"; missing="$missing $var"; fi
               done
               if [ -n "$missing" ]; then echo "Secrets not injected:$missing"; exit 1; fi
+  - name: Cache
+    dependencies: []
+    task:
+      agent:
+        machine:
+          type: f1-standard-2
+          os_image: ubuntu2204
+      jobs:
+        - name: Cache round trip
+          commands:
+            - |
+              if [ -z "$SEMAPHORE_CACHE_URL" ]; then echo "Cache not configured for this job"; exit 1; fi
+              key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
+              echo "$key" > probe.txt
+              cache store "$key" probe.txt
+              rm probe.txt
+              cache restore "$key"
+              grep -qx "$key" probe.txt || { echo "Cache restore failed"; exit 1; }
+              echo "Cache available"
