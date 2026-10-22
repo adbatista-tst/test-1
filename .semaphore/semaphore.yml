@@ -43,10 +43,6 @@ blocks:
   - name: Cache
     dependencies: []
     task:
-      agent:
-        machine:
-          type: f1-standard-2
-          os_image: ubuntu2204
       jobs:
         - name: Cache round trip
           commands:
