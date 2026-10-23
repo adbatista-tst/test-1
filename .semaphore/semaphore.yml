@@ -47,13 +47,13 @@ blocks:
         - name: Cache round trip
           commands:
             - |
-              if [ -z "$SEMAPHORE_CACHE_URL" ]; then echo "Cache not configured for this job"; exit 1; fi
               key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
-              echo "$key" > probe.txt
-              cache store "$key" probe.txt
-              rm probe.txt
-              cache restore "$key"
-              grep -qx "$key" probe.txt || { echo "Cache restore failed"; exit 1; }
+              mkdir -p probe && echo "$key" > probe/probe.txt
+              cache store "$key" probe || { echo "Cache store failed"; exit 1; }
+              rm -rf probe
+              cache restore "$key" || { echo "Cache restore failed"; exit 1; }
+              if [ "$(cat probe/probe.txt 2>/dev/null)" != "$key" ]; then echo "Cache round trip failed: probe file not restored"; exit 1; fi
+              cache delete "$key" || true
               echo "Cache available"
       secrets:
         - name: 'aws Cache '
