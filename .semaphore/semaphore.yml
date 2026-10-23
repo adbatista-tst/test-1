@@ -55,3 +55,9 @@ blocks:
               cache restore "$key"
               grep -qx "$key" probe.txt || { echo "Cache restore failed"; exit 1; }
               echo "Cache available"
+      secrets:
+        - name: 'aws Cache '
+        - name: project secret
+        - name: rsv-test-reserved
+        - name: sample-org-secret
+        - name: sample-project-secret
