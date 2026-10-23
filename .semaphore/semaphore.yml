@@ -44,17 +44,18 @@ blocks:
     dependencies: []
     task:
       jobs:
-        - name: Cache round trip
+        - name: Cache store
           commands:
-            - |
-              key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
-              mkdir -p probe && echo "$key" > probe/probe.txt
-              cache store "$key" probe || { echo "Cache store failed"; exit 1; }
-              rm -rf probe
-              cache restore "$key" || { echo "Cache restore failed"; exit 1; }
-              if [ "$(cat probe/probe.txt 2>/dev/null)" != "$key" ]; then echo "Cache round trip failed: probe file not restored"; exit 1; fi
-              cache delete "$key" || true
-              echo "Cache available"
+            - key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
+            - mkdir -p probe && echo "$key" > probe/probe.txt
+            - 'cache store "$key" probe || { echo "Cache store failed"; exit 1; }'
+            - rm -rf probe
+        - name: cache restore
+          commands:
+            - key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
+            - 'cache restore "$key" || { echo "Cache restore failed"; exit 1; }'
+            - 'if [ "$(cat probe/probe.txt 2>/dev/null)" != "$key" ]; then echo "Cache round trip failed: probe file not restored"; exit 1; fi'
+            - echo "Cache available"
       secrets:
         - name: 'aws Cache '
         - name: project secret
