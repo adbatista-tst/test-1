@@ -16,11 +16,6 @@ blocks:
   - name: "\U0001F9EA Test"
     dependencies: []
     task:
-      secrets:
-        - name: sample-org-secret
-        - name: sample-project-secret
-        - name: rsv-test-reserved
-        - name: project secret
       jobs:
         - name: "\U0001F7E2 Run Tests"
           commands:
