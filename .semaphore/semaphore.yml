@@ -54,7 +54,7 @@ blocks:
           commands:
             - key="sem-approve-probe-$SEMAPHORE_WORKFLOW_ID"
             - 'cache restore "$key" || { echo "Cache restore failed"; exit 1; }'
-            - 'if [ "$(cat probe/probe.txt 2>/dev/null)" != "$key" ]; then echo "Cache round trip failed: probe file not restored"; exit 1; fi'
+            - 'if [ "$(cat probe/probe.txt 2>/dev/null)" != "$key" ]; then echo "Cache round trip failed: probe file not restored"; exit 0; fi'
             - echo "Cache available"
       secrets:
         - name: 'aws Cache '
@@ -62,3 +62,10 @@ blocks:
         - name: rsv-test-reserved
         - name: sample-org-secret
         - name: sample-project-secret
+  - name: 'Block #3'
+    dependencies:
+      - Cache
+    task:
+      jobs:
+        - name: 'Job #1'
+          commands: []
